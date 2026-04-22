@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abitur English Excellence - AI Prep Hub</title>
+    <meta name="description"
+        content="Master the German Abitur English exam with AI-powered tools, C2 vocabulary building, and expert topic reviews.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Include Marked.js for parsing Markdown from Gemini API -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Include DOMPurify to sanitize markdown to prevent XSS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
+    <!-- Include FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: rgba(226, 232, 240, 0.8);
+            --card-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.05);
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --nav-border: rgba(255, 255, 255, 0.3);
+            --accent: #4f46e5;
+            --accent-light: #eef2ff;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: rgba(51, 65, 85, 0.8);
+            --card-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.3);
+            --nav-bg: rgba(30, 41, 59, 0.9);
+            --nav-border: rgba(51, 65, 85, 0.5);
+            --accent: #818cf8;
+            --accent-light: rgba(79, 70, 229, 0.15);
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .tab-active {
+            border-bottom-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .tab-inactive {
+            border-bottom-color: transparent;
+            color: var(--text-muted);
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        /* Flashcard flip effect */
+        .perspective {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card-front,
+        .card-back {
+            backface-visibility: hidden;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* Markdown Styles for AI Responses */
+        .prose p {
+            margin-bottom: 0.75rem;
+        }
+
+        .prose ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .prose ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .prose strong {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .prose h3,
+        .prose h4 {
+            font-weight: 700;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--text-primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modern App Overrides */
+        body {
+            background-image: radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 0.03) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.03) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0.03) 0, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        [data-theme="dark"] body,
+        [data-theme="dark"] {
+            background-image: radial-gradient(at 0% 0%, hsla(253, 60%, 30%, 0.15) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225, 60%, 20%, 0.15) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339, 60%, 20%, 0.15) 0, transparent 50%);
+        }
+
+        .glass-nav {
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--nav-border);
+        }
+
+        .modern-card {
+            border-radius: 1.5rem !important;
+            box-shadow: var(--card-shadow) !important;
+            border: 1px solid var(--border-color) !important;
+            background-color: var(--bg-secondary);
+        }
+
+        main .bg-white {
+            border-radius: 1.5rem;
+        }
+
+        /* Section transition animations */
+        .section-enter {
+            animation: sectionFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes sectionFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: #e2e8f0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: #4f46e5;
+        }
+
+        .theme-toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="dark"] .theme-toggle-knob {
+            transform: translateX(20px);
+        }
+
+        .glow-hover {
+            transition: all 0.3s ease;
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 8px 40px -12px rgba(79, 70, 229, 0.15);
+        }
+
+        .read-time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            z-index: 200;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        [data-theme="dark"] .text-slate-900,
+        [data-theme="dark"] .text-gray-900,
+        [data-theme="dark"] .text-gray-800 {
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .text-slate-600,
+        [data-theme="dark"] .text-gray-600,
+        [data-theme="dark"] .text-gray-700,
+        [data-theme="dark"] .text-slate-400 {
+            color: #94a3b8 !important;
+        }
+
+        [data-theme="dark"] .text-slate-800 {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .bg-white {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .bg-slate-50,
+        [data-theme="dark"] .bg-gray-50,
+        [data-theme="dark"] .bg-slate-100 {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] .border-slate-200,
+        [data-theme="dark"] .border-gray-200,
+        [data-theme="dark"] .border-gray-100,
+        [data-theme="dark"] .border-slate-100,
+        [data-theme="dark"] .border-gray-300 {
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .bg-slate-900 {
+            background-color: #0f172a !important;
+        }
+
+        [data-theme="dark"] .shadow-sm,
+        [data-theme="dark"] .shadow-md,
+        [data-theme="dark"] .shadow-lg,
+        [data-theme="dark"] .shadow-xl {
+            box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        [data-theme="dark"] .bg-indigo-50,
+        [data-theme="dark"] .bg-purple-50 {
+            background-color: rgba(79, 70, 229, 0.1) !important;
+        }
+
+        [data-theme="dark"] .bg-blue-50 {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        [data-theme="dark"] .bg-green-50,
+        [data-theme="dark"] .bg-emerald-50 {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+        }
+
+        [data-theme="dark"] .bg-red-50,
+        [data-theme="dark"] .bg-rose-50 {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        [data-theme="dark"] .bg-yellow-50,
+        [data-theme="dark"] .bg-amber-50 {
+            background-color: rgba(251, 191, 36, 0.1) !important;
+        }
+
+        [data-theme="dark"] .bg-teal-50 {
+            background-color: rgba(20, 184, 166, 0.1) !important;
+        }
+
+        [data-theme="dark"] .bg-orange-50 {
+            background-color: rgba(251, 146, 60, 0.1) !important;
+        }
+
+        [data-theme="dark"] .hover\:bg-slate-100:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] .hover\:bg-gray-50:hover {
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        [data-theme="dark"] input,
+        [data-theme="dark"] textarea {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder {
+            color: var(--text-muted) !important;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col pt-20">
+
+    <div id="toast" class="toast"></div>
+
+    <nav class="fixed top-4 left-0 right-0 z-50 px-4 pointer-events-none">
+        <div
+            class="glass-nav max-w-5xl mx-auto shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-full px-2 py-2 flex justify-between items-center pointer-events-auto transition-all duration-300">
+            <div class="flex items-center pl-4 pr-2">
+                <div
+                    class="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center mr-2 shadow-sm">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                </div>
+                <span class="font-extrabold text-lg tracking-tight text-slate-900 hidden sm:block">AbiPrep</span>
+            </div>
+            <div class="flex items-center space-x-1 overflow-x-auto no-scrollbar pr-2">
+                <button onclick="showSection('home')"
+                    class="nav-btn px-4 py-2 rounded-full text-sm font-semibold hover:bg-slate-100 transition whitespace-nowrap bg-slate-900 text-white">Home</button>
+                <button onclick="showSection('study')"
+                    class="nav-btn px-4 py-2 rounded-full text-sm font-semibold hover:bg-slate-100 text-slate-600 transition whitespace-nowrap">Study
+                    Hub</button>
+                <button onclick="showSection('tasks')"
+                    class="nav-btn px-4 py-2 rounded-full text-sm font-semibold hover:bg-slate-100 text-slate-600 transition whitespace-nowrap">Exercises
+                    & AI</button>
+                <button onclick="showSection('vocab')"
+                    class="nav-btn px-4 py-2 rounded-full text-sm font-semibold hover:bg-slate-100 text-slate-600 transition whitespace-nowrap">Vocab</button>
+                <button class="theme-toggle ml-2" onclick="toggleTheme()" title="Toggle dark mode"
+                    id="theme-toggle-btn">
+                    <div class="theme-toggle-knob" id="theme-knob">
+                        <span id="theme-icon">☀️</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="custom-modal"
+        class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity">
+        <div class="bg-white modern-card p-8 max-w-sm w-full mx-4 transform transition-transform scale-95 opacity-0"
+            id="modal-content">
+            <div
+                class="flex items-center justify-center w-14 h-14 mx-auto bg-slate-100 rounded-full mb-6 text-slate-800 shadow-inner">
+                <i id="modal-icon" class="fa-solid fa-circle-info text-2xl"></i>
+            </div>
+            <h3 id="modal-title" class="text-xl font-extrabold text-center text-slate-900 mb-2">Message</h3>
+            <p id="modal-text" class="text-center text-slate-600 mb-8 leading-relaxed">Details go here.</p>
+            <button onclick="closeModal()"
+                class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition shadow-md">Got
+                it</button>
+        </div>
+    </div>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+
+        <div id="section-home" class="section-enter">
+            <div class="text-center py-16 sm:py-24 px-4 relative">
+                <canvas id="particles-canvas"></canvas>
+
+                <div
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-100 to-purple-50 rounded-full blur-3xl opacity-60 pointer-events-none -z-10">
+                </div>
+
+                <div
+                    class="inline-flex items-center px-4 py-1.5 rounded-full bg-white shadow-sm border border-slate-200 text-slate-800 text-sm font-semibold mb-8 relative z-10">
+                    <span class="flex w-2.5 h-2.5 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                    Gemini AI Powered Hub
+                </div>
+
+                <h1
+                    class="text-5xl sm:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight relative z-10">
+                    Master the Abitur.<br><span class="text-slate-400">Without the stress.</span>
+                </h1>
+
+                <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed relative z-10">
+                    Get highly personalized feedback on your essays and expand your C2 vocabulary dynamically, directly
+                    targeted for the German curriculum.
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
+                    <button onclick="showSection('tasks')"
+                        class="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-4 px-8 rounded-full shadow-xl shadow-slate-900/20 transition transform hover:-translate-y-1 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-pen-nib mr-2"></i> Start Practicing
+                    </button>
+                    <button onclick="showSection('study')"
+                        class="bg-white hover:bg-slate-50 text-slate-900 font-semibold py-4 px-8 rounded-full shadow-sm border border-slate-200 transition transform hover:-translate-y-1 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-book-open mr-2 text-indigo-500"></i> Browse Topics
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 max-w-5xl mx-auto mt-4">
+                <div class="modern-card bg-white p-8 hover:-translate-y-1 transition duration-300 glow-hover">
+                    <div
+                        class="w-12 h-12 bg-slate-100 text-slate-800 rounded-2xl flex items-center justify-center mb-6 text-xl shadow-inner">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Core Topics</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">Review structured facts on Globalization, American
+                        Dream, Environment, and more.</p>
+                </div>
+                <div class="modern-card bg-white p-8 hover:-translate-y-1 transition duration-300 glow-hover">
+                    <div
+                        class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 text-xl shadow-inner">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">AI Grading</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">Write practice texts and let Gemini analyze your
+                        structure, grammar, and style.</p>
+                </div>
+                <div class="modern-card bg-white p-8 hover:-translate-y-1 transition duration-300 glow-hover">
+                    <div
+                        class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 text-xl shadow-inner">
+                        <i class="fa-solid fa-language"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">C2 Lexicon</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">Learn from over fifty high-level academic words
+                        and specific connectives.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-study" class="hidden-section section-enter">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-indigo-500 pb-2 inline-block">Abitur Core
+                Topics</h2>
+
+            <div id="study-master">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">Select a Topic</h3>
+                    <span class="text-sm text-gray-500">5 Core Subjects</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div onclick="openTopic('immigration')"
+                        class="group cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-xl p-6 border border-slate-100 hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative overflow-hidden glow-hover">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full transition-transform duration-500 group-hover:scale-125 z-0">
+                        </div>
+                        <div class="relative z-10 flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-4xl group-hover:scale-110 transition-transform origin-left">🌍</div>
+                                <span class="read-time-badge"><i class="fa-solid fa-clock"></i> 5 min read</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition">
+                                Immigration & Diversity</h3>
+                            <p class="text-slate-600 text-sm flex-grow mb-6">The movement of people, integration
+                                challenges, and economic impacts.</p>
+                            <div
+                                class="flex items-center text-blue-600 text-sm font-semibold group-hover:text-blue-700">
+                                Explore Topic <i
+                                    class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div onclick="openTopic('american-dream')"
+                        class="group cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-xl p-6 border border-slate-100 hover:border-rose-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative overflow-hidden glow-hover">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-bl-full transition-transform duration-500 group-hover:scale-125 z-0">
+                        </div>
+                        <div class="relative z-10 flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-4xl group-hover:scale-110 transition-transform origin-left">🗽</div>
+                                <span class="read-time-badge"><i class="fa-solid fa-clock"></i> 6 min read</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-rose-600 transition">The
+                                American Dream</h3>
+                            <p class="text-slate-600 text-sm flex-grow mb-6">"From rags to riches", equality of
+                                opportunity, and modern realities.</p>
+                            <div
+                                class="flex items-center text-rose-600 text-sm font-semibold group-hover:text-rose-700">
+                                Explore Topic <i
+                                    class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div onclick="openTopic('globalisation')"
+                        class="group cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-xl p-6 border border-slate-100 hover:border-teal-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative overflow-hidden glow-hover">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-teal-50 rounded-bl-full transition-transform duration-500 group-hover:scale-125 z-0">
+                        </div>
+                        <div class="relative z-10 flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-4xl group-hover:scale-110 transition-transform origin-left">🌐</div>
+                                <span class="read-time-badge"><i class="fa-solid fa-clock"></i> 7 min read</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition">
+                                Globalisation</h3>
+                            <p class="text-slate-600 text-sm flex-grow mb-6">The increasing interconnectedness of
+                                economies, cultures, and populations.</p>
+                            <div
+                                class="flex items-center text-teal-600 text-sm font-semibold group-hover:text-teal-700">
+                                Explore Topic <i
+                                    class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div onclick="openTopic('environment')"
+                        class="group cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-xl p-6 border border-slate-100 hover:border-emerald-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative overflow-hidden glow-hover">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full transition-transform duration-500 group-hover:scale-125 z-0">
+                        </div>
+                        <div class="relative z-10 flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-4xl group-hover:scale-110 transition-transform origin-left">🌱</div>
+                                <span class="read-time-badge"><i class="fa-solid fa-clock"></i> 5 min read</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-emerald-600 transition">
+                                The Environment</h3>
+                            <p class="text-slate-600 text-sm flex-grow mb-6">Climate change, sustainability, and
+                                humanity's ecological footprint.</p>
+                            <div
+                                class="flex items-center text-emerald-600 text-sm font-semibold group-hover:text-emerald-700">
+                                Explore Topic <i
+                                    class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div onclick="openTopic('uk')"
+                        class="group cursor-pointer bg-white rounded-2xl shadow-sm hover:shadow-xl p-6 border border-slate-100 hover:border-amber-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative overflow-hidden glow-hover">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-bl-full transition-transform duration-500 group-hover:scale-125 z-0">
+                        </div>
+                        <div class="relative z-10 flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-4xl group-hover:scale-110 transition-transform origin-left">👑</div>
+                                <span class="read-time-badge"><i class="fa-solid fa-clock"></i> 6 min read</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-amber-600 transition">The
+                                UK: Tradition & Change</h3>
+                            <p class="text-slate-600 text-sm flex-grow mb-6">From the British Empire to a modern,
+                                post-Brexit multicultural society.</p>
+                            <div
+                                class="flex items-center text-amber-600 text-sm font-semibold group-hover:text-amber-700">
+                                Explore Topic <i
+                                    class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="study-detail" class="hidden">
+                <button onclick="closeTopic()"
+                    class="mb-6 bg-white border border-gray-200 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 font-bold py-2 px-5 rounded-lg flex items-center transition shadow-sm group">
+                    <i class="fa-solid fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Back to
+                    Overview
+                </button>
+
+                <!-- Topic Detail: Immigration -->
+                <div id="topic-content-immigration"
+                    class="topic-detail hidden bg-white rounded-xl shadow-lg p-6 sm:p-10 border-t-8 border-blue-500 section-enter">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">Immigration & Diversity</h3>
+                    <p class="text-xl text-gray-600 mb-8 border-b pb-4">The movement of people, integration challenges,
+                        and demographic shifts.</p>
+
+                    <div class="space-y-8">
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">Theories of Integration</h4>
+                            <p class="text-gray-700 mb-4">In Abitur exams, you must distinguish between different models
+                                of how immigrants assimilate or integrate into host societies:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                    <h5 class="font-bold text-blue-900 mb-2">The Melting Pot</h5>
+                                    <p class="text-sm text-gray-700">Historically associated with the US. Different
+                                        cultures blend together to create a singular, new, homogeneous national culture
+                                        (Assimilation).</p>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                                    <h5 class="font-bold text-green-900 mb-2">The Salad Bowl</h5>
+                                    <p class="text-sm text-gray-700">Cultures mix but retain their distinct identities,
+                                        much like ingredients in a salad. Advocates for Multiculturalism and diversity.
+                                    </p>
+                                </div>
+                                <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                    <h5 class="font-bold text-purple-900 mb-2">The Cultural Mosaic</h5>
+                                    <p class="text-sm text-gray-700">Often used for Canada. Similar to the salad bowl,
+                                        but suggests a formally structured policy encouraging ethnic groups to maintain
+                                        their heritage.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">Demographics & The Need for Migration
+                            </h4>
+                            <p class="text-gray-700 mb-4">Western societies face a severe demographic crisis: an aging
+                                population coupled with declining birth rates. Without immigration, labor markets and
+                                pension systems face potential collapse.</p>
+
+                            <!-- Diagram: Demographic Stat -->
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                                <h5 class="font-bold text-gray-800 mb-4 text-center">Western World Dependency Ratio
+                                    Strain</h5>
+                                <div class="flex flex-col space-y-4 max-w-xl mx-auto">
+                                    <div class="flex items-center">
+                                        <span class="w-24 text-sm font-semibold text-gray-600">1990 (Workers vs
+                                            Retirees)</span>
+                                        <div class="flex-grow flex h-6 ml-4 rounded overflow-hidden">
+                                            <div
+                                                class="bg-blue-500 w-[80%] flex items-center justify-center text-xs text-white">
+                                                4 Workers</div>
+                                            <div
+                                                class="bg-red-400 w-[20%] flex items-center justify-center text-xs text-white">
+                                                1 Retiree</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="w-24 text-sm font-semibold text-gray-600">2030 (Projected)</span>
+                                        <div class="flex-grow flex h-6 ml-4 rounded overflow-hidden">
+                                            <div
+                                                class="bg-blue-500 w-[66%] flex items-center justify-center text-xs text-white">
+                                                2 Workers</div>
+                                            <div
+                                                class="bg-red-400 w-[34%] flex items-center justify-center text-xs text-white">
+                                                1 Retiree</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-center text-gray-500 mt-4">Immigration of young, skilled workers
+                                    (Fachkräfte) is mathematically required to sustain the welfare state.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                <h4 class="font-bold text-gray-800 flex items-center mb-3 text-lg border-b pb-2">Push
+                                    Factors (Emigration)</h4>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-2">
+                                    <li><strong>Political/Social:</strong> Persecution, war, lack of human rights,
+                                        religious intolerance.</li>
+                                    <li><strong>Economic:</strong> Extreme poverty, high unemployment, collapsing
+                                        economies.</li>
+                                    <li><strong>Environmental:</strong> Climate change, natural disasters, famine
+                                        (Climate Refugees).</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                <h4 class="font-bold text-gray-800 flex items-center mb-3 text-lg border-b pb-2">Pull
+                                    Factors (Immigration)</h4>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-2">
+                                    <li><strong>Economic:</strong> Job opportunities, higher wages, better standard of
+                                        living.</li>
+                                    <li><strong>Social:</strong> Established immigrant communities, better healthcare,
+                                        superior education systems.</li>
+                                    <li><strong>Political:</strong> Democracy, freedom of speech, safety.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Detail: American Dream -->
+                <div id="topic-content-american-dream"
+                    class="topic-detail hidden bg-white rounded-xl shadow-lg p-6 sm:p-10 border-t-8 border-red-500 section-enter">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">The American Dream</h3>
+                    <p class="text-xl text-gray-600 mb-8 border-b pb-4">From "Rags to Riches", equality of opportunity,
+                        and systemic realities.</p>
+
+                    <div class="space-y-8">
+                        <div class="bg-red-50 p-6 rounded-xl border border-red-100">
+                            <h4 class="text-2xl font-semibold text-red-900 mb-3">Historical & Ideological Roots</h4>
+                            <ul class="list-disc list-inside text-gray-800 space-y-3">
+                                <li><strong>Declaration of Independence (1776):</strong> The fundamental promise that
+                                    "all men are created equal" with unalienable rights to "Life, Liberty and the
+                                    pursuit of Happiness".</li>
+                                <li><strong>Manifest Destiny:</strong> The 19th-century belief that the expansion of the
+                                    US throughout the American continents was both justified and inevitable (frontier
+                                    spirit).</li>
+                                <li><strong>Puritan Work Ethic:</strong> The concept that hard work, discipline, and
+                                    frugality are a result of a person's salvation, deeply embedding capitalism into the
+                                    American psyche.</li>
+                                <li><strong>Individualism over Collectivism:</strong> Unlike European welfare states,
+                                    the US focuses heavily on self-reliance (pulling oneself up by one's bootstraps).
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">The Illusion: Wealth Inequality</h4>
+                            <p class="text-gray-700 mb-4">A recurring theme in the Abitur is dismantling the myth of the
+                                American Dream. Social mobility in the US is currently lower than in many European
+                                countries. The gap between the ultra-rich and the working class has widened
+                                exponentially.</p>
+
+                            <!-- Diagram: Wealth Distribution -->
+                            <div class="bg-gray-800 p-6 rounded-xl text-white shadow-inner">
+                                <h5 class="font-bold text-gray-100 mb-2">US Wealth Distribution (Visualized)</h5>
+                                <p class="text-xs text-gray-400 mb-4">Distribution of total wealth among the population.
+                                </p>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>Top 1%</span>
+                                            <span class="font-bold text-green-400">Owns ~32% of Wealth</span>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-4">
+                                            <div class="bg-green-500 h-4 rounded-full" style="width: 32%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>Next 9%</span>
+                                            <span class="font-bold text-blue-400">Owns ~37% of Wealth</span>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-4">
+                                            <div class="bg-blue-500 h-4 rounded-full" style="width: 37%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span>Bottom 50%</span>
+                                            <span class="font-bold text-red-400">Owns ~2.5% of Wealth</span>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-4">
+                                            <div class="bg-red-500 h-4 rounded-full" style="width: 2.5%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-4 italic">Statistic: The "Rags to Riches" narrative
+                                    is statistically highly improbable today. Systemic barriers (healthcare costs,
+                                    student loan debt) hinder upward mobility.</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">Minorities & Systemic Issues</h4>
+                            <p class="text-gray-700">The original formulation of the Dream excluded enslaved people,
+                                Native Americans, and women. Today, movements like <strong>Black Lives Matter
+                                    (BLM)</strong> highlight the ongoing systemic racism, unequal access to quality
+                                education based on zip codes (redlining legacy), and disparities in the justice system,
+                                proving the Dream is not equally accessible.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Detail: Globalisation -->
+                <div id="topic-content-globalisation"
+                    class="topic-detail hidden bg-white rounded-xl shadow-lg p-6 sm:p-10 border-t-8 border-teal-500 section-enter">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">Globalisation</h3>
+                    <p class="text-xl text-gray-600 mb-8 border-b pb-4">The increasing interconnectedness of economies,
+                        cultures, and populations.</p>
+
+                    <div class="space-y-8">
+                        <p class="text-gray-700">Globalisation is not just economic; it spans multiple dimensions. In an
+                            exam, you must be able to analyze an issue from economic, cultural, and ecological
+                            perspectives simultaneously.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                                <h4 class="font-bold text-teal-800 flex items-center mb-3 text-lg"><i
+                                        class="fa-solid fa-chart-line mr-2"></i> Economic Dimension</h4>
+                                <p class="text-sm text-gray-700 mb-3">The integration of global markets, driven by
+                                    multinational corporations (MNCs) and free-trade agreements.</p>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                    <li><strong>Pros:</strong> Mass production lowers consumer prices. Lifts millions
+                                        out of absolute poverty in developing nations (e.g., China, India).</li>
+                                    <li><strong>Cons:</strong> Outsourcing leads to job losses in developed nations.
+                                        Exploitation via sweatshops (poor working conditions, child labor). Monopoly
+                                        power of tech giants.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                                <h4 class="font-bold text-purple-800 flex items-center mb-3 text-lg"><i
+                                        class="fa-solid fa-earth-americas mr-2"></i> Cultural Dimension</h4>
+                                <p class="text-sm text-gray-700 mb-3">The spread of ideas, media, and language creating
+                                    a "Global Village".</p>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                    <li><strong>Pros:</strong> Greater awareness of global issues, sharing of scientific
+                                        knowledge, cultural exchange.</li>
+                                    <li><strong>Cons:</strong> "Westernization" or "Americanization" (McDonaldization).
+                                        Loss of indigenous cultures, languages, and local traditions (cultural
+                                        homogenization).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">The Disparity of Globalisation</h4>
+
+                            <!-- Diagram: Globalisation Winners/Losers -->
+                            <div
+                                class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                                <h5 class="font-bold text-gray-800 mb-4">The "Elephant Curve" Concept</h5>
+                                <p class="text-sm text-gray-600 mb-4">Economist Branko Milanović's famous curve shows
+                                    who benefited most from global income growth over the last decades:</p>
+
+                                <div
+                                    class="flex items-end h-32 space-x-2 w-full max-w-lg mx-auto border-b border-l border-gray-300 pb-2 pl-2">
+                                    <!-- Simplified Bar representation of the curve -->
+                                    <div class="w-1/4 bg-gray-300 h-[20%] relative group"><span
+                                            class="absolute -bottom-6 text-xs text-gray-500 w-full text-center">Poorest</span>
+                                    </div>
+                                    <div class="w-1/4 bg-teal-400 h-[80%] relative group"><span
+                                            class="absolute -bottom-6 text-xs text-teal-700 w-full text-center font-bold">Asian
+                                            Middle Class</span></div>
+                                    <div class="w-1/4 bg-red-400 h-[10%] relative group"><span
+                                            class="absolute -bottom-6 text-xs text-red-700 w-full text-center font-bold">Western
+                                            Working Class</span></div>
+                                    <div class="w-1/4 bg-blue-500 h-[100%] relative group"><span
+                                            class="absolute -bottom-6 text-xs text-blue-700 w-full text-center font-bold">Global
+                                            1%</span></div>
+                                </div>
+                                <div class="mt-8 text-sm text-gray-700">
+                                    <strong>Analysis:</strong> The emerging middle classes in Asia and the global elite
+                                    (Top 1%) are the massive winners of globalisation. The <strong>Western working
+                                        classes</strong> (whose jobs were outsourced) saw stagnant wages, fueling
+                                    populism and anti-globalisation sentiments (e.g., Trump, Brexit).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Detail: Environment -->
+                <div id="topic-content-environment"
+                    class="topic-detail hidden bg-white rounded-xl shadow-lg p-6 sm:p-10 border-t-8 border-green-500 section-enter">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">The Environment & Climate Change</h3>
+                    <p class="text-xl text-gray-600 mb-8 border-b pb-4">The existential crisis, sustainability, and
+                        humanity's ecological footprint.</p>
+
+                    <div class="space-y-8">
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">The State of the Climate</h4>
+                            <p class="text-gray-700 mb-4">Climate change is an anthropogenic (human-caused) crisis
+                                driven by greenhouse gas (GHG) emissions. The primary goal of the <strong>Paris
+                                    Agreement</strong> is to limit global warming to well below 2°C, preferably 1.5°C,
+                                compared to pre-industrial levels.</p>
+
+                            <!-- Diagram: Warming Stripes / Emissions -->
+                            <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
+                                <h5 class="font-bold text-white mb-2">Global CO₂ Emissions by Sector</h5>
+                                <div class="flex w-full h-8 rounded-full overflow-hidden mt-4">
+                                    <div class="bg-yellow-500 w-[73%] flex items-center justify-center text-xs font-bold text-yellow-900"
+                                        title="Energy (Electricity, Heat, Transport)">Energy 73%</div>
+                                    <div class="bg-green-500 w-[18%] flex items-center justify-center text-xs font-bold text-green-900"
+                                        title="Agriculture, Forestry, Land Use">Agri 18%</div>
+                                    <div class="bg-gray-400 w-[6%] flex items-center justify-center text-xs font-bold text-gray-900"
+                                        title="Industry">Ind 6%</div>
+                                    <div class="bg-blue-400 w-[3%] flex items-center justify-center text-xs font-bold text-blue-900"
+                                        title="Waste">3%</div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-3">Statistics emphasize that individual actions
+                                    (recycling, changing lightbulbs) are insufficient without massive systemic changes
+                                    in how we produce energy and transport goods.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-red-50 p-6 rounded-xl border border-red-100">
+                                <h4 class="font-bold text-red-800 mb-3 text-lg"><i class="fa-solid fa-fire mr-2"></i>
+                                    Tipping Points & Consequences</h4>
+                                <ul class="list-disc list-inside text-sm text-red-900 space-y-2">
+                                    <li><strong>Tipping Points:</strong> Thresholds that, once crossed, lead to
+                                        irreversible changes (e.g., melting of Greenland ice sheet, thawing permafrost
+                                        releasing methane).</li>
+                                    <li><strong>Extreme Weather:</strong> Increased frequency of droughts, hurricanes,
+                                        and floods.</li>
+                                    <li><strong>Climate Injustice:</strong> Developing nations, which contributed the
+                                        least to emissions, suffer the most severe consequences (loss of land,
+                                        agriculture).</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 p-6 rounded-xl border border-green-100">
+                                <h4 class="font-bold text-green-800 mb-3 text-lg"><i class="fa-solid fa-leaf mr-2"></i>
+                                    Mitigation & Solutions</h4>
+                                <ul class="list-disc list-inside text-sm text-green-900 space-y-2">
+                                    <li><strong>Renewable Energy Transition:</strong> Moving from fossil fuels (coal,
+                                        oil, gas) to solar, wind, and geothermal.</li>
+                                    <li><strong>Circular Economy:</strong> Moving away from the "take-make-dispose"
+                                        model to one that emphasizes recycling, reusing, and zero waste.</li>
+                                    <li><strong>Greenwashing:</strong> A critical term to know. When corporations use
+                                        deceptive marketing to persuade the public that employee's products/policies are
+                                        environmentally friendly.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Detail: UK -->
+                <div id="topic-content-uk"
+                    class="topic-detail hidden bg-white rounded-xl shadow-lg p-6 sm:p-10 border-t-8 border-yellow-500 section-enter">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">The UK: Tradition, Change & Brexit</h3>
+                    <p class="text-xl text-gray-600 mb-8 border-b pb-4">From the British Empire to a deeply divided
+                        post-Brexit society.</p>
+
+                    <div class="space-y-8">
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">Postcolonialism & Multiculturalism
+                            </h4>
+                            <p class="text-gray-700 mb-4">The UK's modern identity is inextricably linked to its
+                                imperial past. At its peak, the British Empire covered a quarter of the globe.
+                                Post-WWII, the UK invited citizens from the Commonwealth (e.g., the <strong>Windrush
+                                    Generation</strong> from the Caribbean) to rebuild the country.</p>
+                            <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-sm text-gray-800">
+                                <strong>The Windrush Scandal (2018):</strong> A critical example of systemic failure,
+                                where hundreds of Commonwealth citizens, many of whom had lived in the UK for decades,
+                                were wrongly detained, denied legal rights, and threatened with deportation by the UK
+                                government.
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">The Anatomy of Brexit</h4>
+                            <p class="text-gray-700 mb-4">The 2016 referendum to leave the European Union was a seismic
+                                shock driven by concerns over sovereignty ("Take back control"), immigration, and
+                                economic frustration.</p>
+
+                            <!-- Diagram: Brexit Vote -->
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center shadow-sm">
+                                <h5 class="font-bold text-gray-800 mb-4">The 2016 Referendum Results</h5>
+
+                                <div class="flex items-center space-x-4 max-w-lg mx-auto">
+                                    <div class="w-1/3 text-right">
+                                        <span class="block font-bold text-blue-700 text-xl">51.9%</span>
+                                        <span class="text-sm text-gray-500">Leave</span>
+                                    </div>
+                                    <div class="flex-grow flex h-8 rounded-full overflow-hidden shadow-inner">
+                                        <div class="bg-blue-600 w-[51.9%]"></div>
+                                        <div class="bg-yellow-400 w-[48.1%]"></div>
+                                    </div>
+                                    <div class="w-1/3 text-left">
+                                        <span class="block font-bold text-yellow-600 text-xl">48.1%</span>
+                                        <span class="text-sm text-gray-500">Remain</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 text-sm text-gray-700 text-left bg-white p-4 rounded border">
+                                    <strong>The Demographic Divide:</strong>
+                                    <ul class="list-disc list-inside mt-2 space-y-1">
+                                        <li><strong>Age:</strong> 73% of 18-24 year olds voted Remain; 60% of over-65s
+                                            voted Leave.</li>
+                                        <li><strong>Geography:</strong> London, Scotland, and Northern Ireland strongly
+                                            supported Remain; Rural England and Wales supported Leave.</li>
+                                        <li><strong>Education:</strong> Areas with higher levels of education strongly
+                                            correlated with Remain votes.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-semibold text-gray-800 mb-4">Modern Challenges</h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>The Class System:</strong> Despite claims of a meritocracy, the UK remains
+                                    heavily stratified by class, accent, and education (public vs. state schools).</li>
+                                <li><strong>The Monarchy:</strong> An ongoing debate regarding its relevance, cost to
+                                    the taxpayer, and representation in a modern, diverse democracy.</li>
+                                <li><strong>Devolution:</strong> The push for independence in Scotland and the complex
+                                    political situation in Northern Ireland (Good Friday Agreement fragility).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-tasks" class="hidden-section section-enter">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-indigo-500 pb-2 inline-block">Exercises &
+                AI Grader</h2>
+
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="flex overflow-x-auto border-b border-gray-200">
+                    <button
+                        class="whitespace-nowrap flex-1 py-4 px-4 text-center font-medium focus:outline-none tab-active bg-indigo-50"
+                        id="btn-t-summary" onclick="switchTaskTab('summary')">AFB I: Summary</button>
+                    <button
+                        class="whitespace-nowrap flex-1 py-4 px-4 text-center font-medium focus:outline-none tab-inactive hover:bg-gray-50"
+                        id="btn-t-analysis" onclick="switchTaskTab('analysis')">AFB II: Analysis</button>
+                    <button
+                        class="whitespace-nowrap flex-1 py-4 px-4 text-center font-medium focus:outline-none tab-inactive hover:bg-gray-50"
+                        id="btn-t-comment" onclick="switchTaskTab('comment')">AFB III: Comment</button>
+                    <button
+                        class="whitespace-nowrap flex-1 py-4 px-4 text-center font-medium focus:outline-none tab-inactive hover:bg-gray-50"
+                        id="btn-t-mediation" onclick="switchTaskTab('mediation')">Mediation</button>
+                </div>
+
+                <div class="p-6 sm:p-8">
+                    <!-- Summary Task -->
+                    <div id="tab-summary" class="task-content">
+                        <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Practice Task: Outline / Summarize</h3>
+                            <p class="text-gray-600 text-sm mb-4">Read the following text and outline the positive and
+                                negative aspects of Social Media mentioned by the author. Remember to stay neutral and
+                                avoid personal opinions.</p>
+                            <div
+                                class="bg-white p-4 rounded border border-gray-300 italic text-sm text-gray-700 shadow-inner">
+                                "The proliferation of social media platforms has undeniably reshaped how young people
+                                interact. On one hand, it fosters global connectivity and provides marginalized youths
+                                with supportive online communities that they might lack locally. It also serves as a
+                                democratic platform for rapid information sharing. Conversely, however, excessive use is
+                                increasingly linked to detrimental mental health outcomes, including anxiety and a
+                                distorted sense of body image. Furthermore, the constant barrage of curated lives
+                                exacerbates feelings of inadequacy among teenagers."
+                            </div>
+                        </div>
+                        <textarea id="essay-summary-input"
+                            class="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Write your summary here..."></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-sm text-gray-500 font-medium" id="word-count-summary">0 words</span>
+                            <button id="grade-btn-summary" onclick="gradeEssay('essay-summary-input', 'summary')"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition flex items-center"><i
+                                    class="fa-solid fa-wand-magic-sparkles mr-2"></i> Grade Essay</button>
+                        </div>
+                        <div id="feedback-container-summary"
+                            class="hidden mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-5">
+                            <h4 class="font-bold text-indigo-800 mb-2">Feedback:</h4>
+                            <div id="feedback-content-summary" class="prose prose-sm text-gray-800"></div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Task -->
+                    <div id="tab-analysis" class="task-content hidden">
+                        <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Practice Task: Analyze / Examine</h3>
+                            <p class="text-gray-600 text-sm mb-4">Analyze how the speaker in the following excerpt uses
+                                rhetorical devices to persuade the audience of the urgency of climate change.</p>
+                            <div
+                                class="bg-white p-4 rounded border border-gray-300 italic text-sm text-gray-700 shadow-inner">
+                                "Climate change is not a distant threat; it is our present reality. Look around you. The
+                                rising tides are weeping at our shores, while our forests choke on the ashes of
+                                indecision. We must not, we cannot, wait for tomorrow. The time for empty promises has
+                                passed. The time for action is now."
+                            </div>
+                        </div>
+                        <textarea id="essay-analysis-input"
+                            class="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Write your analysis here..."></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-sm text-gray-500 font-medium" id="word-count-analysis">0 words</span>
+                            <button id="grade-btn-analysis" onclick="gradeEssay('essay-analysis-input', 'analysis')"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition flex items-center"><i
+                                    class="fa-solid fa-wand-magic-sparkles mr-2"></i> Grade Essay</button>
+                        </div>
+                        <div id="feedback-container-analysis"
+                            class="hidden mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-5">
+                            <h4 class="font-bold text-indigo-800 mb-2">Feedback:</h4>
+                            <div id="feedback-content-analysis" class="prose prose-sm text-gray-800"></div>
+                        </div>
+                    </div>
+
+                    <!-- Comment Task -->
+                    <div id="tab-comment" class="task-content hidden">
+                        <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Practice Task: Comment / Discuss</h3>
+                            <p class="text-gray-600 text-sm mb-4">Write an argumentative essay (comment) on the
+                                following statement:</p>
+                            <div
+                                class="bg-white p-4 rounded border border-gray-300 font-medium text-lg text-center text-gray-800 shadow-inner">
+                                "Globalisation has brought more harm than good to local cultures."
+                            </div>
+                            <p class="text-gray-600 text-sm mt-4">Make sure to weigh the benefits of cultural exchange
+                                against the risks of cultural homogenization and come to a clear conclusion.</p>
+                        </div>
+                        <textarea id="essay-comment-input"
+                            class="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Write your comment here..."></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-sm text-gray-500 font-medium" id="word-count-comment">0 words</span>
+                            <button id="grade-btn-comment" onclick="gradeEssay('essay-comment-input', 'comment')"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition flex items-center"><i
+                                    class="fa-solid fa-wand-magic-sparkles mr-2"></i> Grade Essay</button>
+                        </div>
+                        <div id="feedback-container-comment"
+                            class="hidden mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-5">
+                            <h4 class="font-bold text-indigo-800 mb-2">Feedback:</h4>
+                            <div id="feedback-content-comment" class="prose prose-sm text-gray-800"></div>
+                        </div>
+                    </div>
+
+                    <!-- Mediation Task -->
+                    <div id="tab-mediation" class="task-content hidden">
+                        <div class="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Practice Task: Mediate</h3>
+                            <p class="text-gray-600 text-sm mb-4">You are participating in an international youth forum.
+                                Write an <strong>email</strong> to your British friend explaining the current situation
+                                of renewable energy in Germany, based on the German text below. Focus on the successes
+                                and the main problem.</p>
+                            <div
+                                class="bg-white p-4 rounded border border-gray-300 italic text-sm text-gray-700 shadow-inner">
+                                "In Deutschland hat die Nutzung von erneuerbaren Energien im Jahr 2023 einen Rekordwert
+                                erreicht. Über 50% des Stroms kamen aus Wind- und Solarkraft. Dennoch bleibt der
+                                Netzausbau eine große Herausforderung, da viele Stromleitungen fehlen, um den Windstrom
+                                aus dem windreichen Norden in den industriellen Süden zu transportieren."
+                            </div>
+                        </div>
+                        <textarea id="essay-mediation-input"
+                            class="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Write your mediation text here..."></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-sm text-gray-500 font-medium" id="word-count-mediation">0 words</span>
+                            <button id="grade-btn-mediation" onclick="gradeEssay('essay-mediation-input', 'mediation')"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition flex items-center"><i
+                                    class="fa-solid fa-wand-magic-sparkles mr-2"></i> Grade Essay</button>
+                        </div>
+                        <div id="feedback-container-mediation"
+                            class="hidden mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-5">
+                            <h4 class="font-bold text-indigo-800 mb-2">Feedback:</h4>
+                            <div id="feedback-content-mediation" class="prose prose-sm text-gray-800"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-vocab" class="hidden-section section-enter">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-indigo-500 pb-2 inline-block">C2
+                Vocabulary Builder</h2>
+
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <!-- Vocab Sub-Tabs -->
+                <div class="flex overflow-x-auto border-b border-gray-200">
+                    <button
+                        class="whitespace-nowrap flex-1 py-4 px-4 text-center font-medium focus:outline-none tab-active bg-purple-50"
+                        id="btn-v-flashcards" onclick="switchVocabSubTab('flashcards')"><i
+                            class="fa-solid fa-layer-group mr-2"></i>Flashcards</button>
+                    <button
+                        class="whitespace-nowrap flex-1 py-4 px-4 text-center font-medium focus:outline-none tab-inactive hover:bg-gray-50"
+                        id="btn-v-quiz" onclick="switchVocabSubTab('quiz')"><i
+                            class="fa-solid fa-gamepad mr-2"></i>Practice Quiz</button>
+                    <button
+                        class="whitespace-nowrap flex-1 py-4 px-4 text-center font-medium focus:outline-none tab-inactive hover:bg-gray-50"
+                        id="btn-v-structures" onclick="switchVocabSubTab('structures')"><i
+                            class="fa-solid fa-link mr-2"></i>Connectives & Structures</button>
+                </div>
+
+                <div class="p-6 sm:p-8">
+
+                    <!-- Flashcards Tab -->
+                    <div id="tab-v-flashcards" class="vocab-tab-content">
+                        <div class="text-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Master Essential Abitur Words</h3>
+                        </div>
+
+                        <!-- Progress Stats -->
+                        <div class="flex justify-center space-x-3 sm:space-x-6 mb-6">
+                            <div
+                                class="text-sm font-semibold text-gray-700 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                                <span
+                                    class="w-3 h-3 rounded-full bg-green-500 inline-block mr-2 shadow-sm"></span>Mastered:
+                                <span id="fc-stat-mastered">0</span>
+                            </div>
+                            <div
+                                class="text-sm font-semibold text-gray-700 bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
+                                <span
+                                    class="w-3 h-3 rounded-full bg-orange-500 inline-block mr-2 shadow-sm"></span>Learning:
+                                <span id="fc-stat-learning">0</span>
+                            </div>
+                            <div
+                                class="text-sm font-semibold text-gray-700 bg-gray-50 px-3 py-1 rounded-full border border-gray-200">
+                                <span
+                                    class="w-3 h-3 rounded-full bg-gray-300 inline-block mr-2 shadow-sm"></span>Unseen:
+                                <span id="fc-stat-unseen">50</span>
+                            </div>
+                        </div>
+
+                        <!-- Flashcard UI -->
+                        <div class="perspective w-full max-w-md mx-auto h-72 sm:h-64 cursor-pointer"
+                            onclick="flipFlashcard()">
+                            <div id="flashcard-inner"
+                                class="card-inner w-full h-full relative transition-transform duration-500 shadow-xl rounded-2xl">
+                                <!-- Front -->
+                                <div
+                                    class="card-front absolute w-full h-full bg-white rounded-2xl border-2 border-indigo-100 flex flex-col items-center justify-center p-6 text-center">
+                                    <button onclick="speakWord(event)"
+                                        class="absolute top-4 left-4 w-8 h-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-500 hover:bg-indigo-100 transition z-10"
+                                        title="Listen pronunciation"><i class="fa-solid fa-volume-high"></i></button>
+                                    <div id="fc-badge-front" class="absolute top-4 right-4"></div>
+                                    <span
+                                        class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-4">English</span>
+                                    <span id="fc-word"
+                                        class="text-3xl sm:text-4xl font-extrabold text-indigo-900 drop-shadow-sm"></span>
+                                    <span class="text-sm text-gray-400 mt-8 animate-pulse"><i
+                                            class="fa-solid fa-hand-pointer mr-1"></i> Tap to flip</span>
+                                </div>
+                                <!-- Back -->
+                                <div
+                                    class="card-back absolute w-full h-full bg-gradient-to-br from-indigo-600 to-purple-700 text-white rounded-2xl flex flex-col items-center justify-center p-6 text-center border-2 border-indigo-700">
+                                    <div id="fc-badge-back" class="absolute top-4 right-4"></div>
+                                    <span
+                                        class="text-xs font-bold text-indigo-200 uppercase tracking-widest mb-2">German
+                                        Translation</span>
+                                    <span id="fc-translation"
+                                        class="text-2xl sm:text-3xl font-bold mb-4 text-yellow-300"></span>
+                                    <span id="fc-definition"
+                                        class="text-sm sm:text-base italic mb-4 text-indigo-100"></span>
+                                    <div class="w-full border-t border-indigo-400/50 pt-3 mt-auto">
+                                        <span
+                                            class="text-xs font-bold text-indigo-200 uppercase block mb-1">Example</span>
+                                        <span id="fc-example" class="text-sm font-medium"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flashcard Controls -->
+                        <div class="flex flex-col items-center mt-6 space-y-4">
+                            <!-- Learning Evaluation (Activates on Flip) -->
+                            <div id="fc-actions"
+                                class="flex space-x-4 transition-opacity duration-300 opacity-50 pointer-events-none">
+                                <button onclick="markCard('learning')"
+                                    class="px-5 py-2.5 bg-orange-100 text-orange-700 hover:bg-orange-200 hover:text-orange-800 rounded-xl font-bold transition flex items-center shadow-sm border border-orange-200"><i
+                                        class="fa-solid fa-rotate-left mr-2"></i> Study Again</button>
+                                <button onclick="markCard('mastered')"
+                                    class="px-5 py-2.5 bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 rounded-xl font-bold transition flex items-center shadow-sm border border-green-200"><i
+                                        class="fa-solid fa-check mr-2"></i> Got it</button>
+                            </div>
+
+                            <!-- Navigation -->
+                            <div
+                                class="flex justify-center items-center space-x-6 w-full max-w-md border-t border-gray-200 pt-4">
+                                <button onclick="prevFlashcard()"
+                                    class="w-12 h-12 rounded-full bg-gray-100 hover:bg-indigo-100 text-gray-600 hover:text-indigo-600 flex items-center justify-center transition shadow-sm"><i
+                                        class="fa-solid fa-chevron-left"></i></button>
+                                <span id="fc-counter" class="font-bold text-gray-600 w-16 text-center">1 / 50</span>
+                                <button onclick="nextFlashcard()"
+                                    class="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center transition shadow-md"><i
+                                        class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Tab -->
+                    <div id="tab-v-quiz" class="vocab-tab-content hidden">
+                        <div id="quiz-setup" class="text-center py-10">
+                            <div
+                                class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Vocabulary Quiz</h3>
+                            <p class="text-gray-600 mb-8 max-w-md mx-auto">Test your knowledge of the essential
+                                Abitur words. You'll get 10 random questions.</p>
+                            <button onclick="startVocabQuiz()"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform hover:-translate-y-1 text-lg">Start
+                                Quiz</button>
+                        </div>
+
+                        <div id="quiz-active" class="hidden max-w-2xl mx-auto">
+                            <div class="flex justify-between items-center mb-6">
+                                <span
+                                    class="text-sm font-bold text-gray-500 bg-gray-100 py-1 px-3 rounded-full">Question
+                                    <span id="quiz-q-num">1</span>/10</span>
+                                <span
+                                    class="text-sm font-bold text-indigo-600 bg-indigo-50 py-1 px-3 rounded-full">Score:
+                                    <span id="quiz-score">0</span></span>
+                            </div>
+
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center mb-6 shadow-sm">
+                                <p class="text-sm text-gray-500 mb-2 uppercase tracking-wide font-semibold">What is the
+                                    English word for:</p>
+                                <h4 id="quiz-target-word" class="text-3xl font-extrabold text-indigo-900 mb-2"></h4>
+                                <p id="quiz-target-def" class="text-sm text-gray-600 italic"></p>
+                            </div>
+
+                            <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Options injected via JS -->
+                            </div>
+                        </div>
+
+                        <div id="quiz-result" class="hidden text-center py-10">
+                            <div
+                                class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-800 mb-2">Quiz Completed!</h3>
+                            <p class="text-xl text-gray-600 mb-8">You scored <span id="quiz-final-score"
+                                    class="font-extrabold text-indigo-600 text-2xl"></span> out of 10.</p>
+                            <button onclick="startVocabQuiz()"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow transition"><i
+                                    class="fa-solid fa-rotate-right mr-2"></i> Retake Quiz</button>
+                        </div>
+                    </div>
+
+                    <!-- Connectives & Structures -->
+                    <div id="tab-v-structures" class="vocab-tab-content hidden">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Structural Words & Connectives
+                        </h3>
+                        <p class="text-gray-600 text-center mb-8">Use these high-level structures to improve the
+                            fluency, coherence, and academic tone of your essays and comments.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                            <!-- Structuring -->
+                            <div
+                                class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-indigo-400 border border-gray-100">
+                                <div
+                                    class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-list-ol"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-3 text-lg">Structuring & Adding</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex flex-col"><span class="font-bold text-indigo-700">First and
+                                            foremost,</span> <span class="text-xs text-gray-500">In erster Linie</span>
+                                    </li>
+                                    <li class="flex flex-col"><span class="font-bold text-indigo-700">Furthermore /
+                                            Moreover,</span> <span class="text-xs text-gray-500">Darüber hinaus</span>
+                                    </li>
+                                    <li class="flex flex-col"><span class="font-bold text-indigo-700">Not only..., but
+                                            also...</span> <span class="text-xs text-gray-500">Nicht nur ..., sondern
+                                            auch ...</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-indigo-700">In addition to
+                                            this,</span> <span class="text-xs text-gray-500">Zusätzlich dazu</span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Contrasting -->
+                            <div
+                                class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-rose-400 border border-gray-100">
+                                <div
+                                    class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-code-compare"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-3 text-lg">Contrasting</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex flex-col"><span class="font-bold text-rose-700">Contrary to popular
+                                            belief,</span> <span class="text-xs text-gray-500">Im Gegensatz zur
+                                            allgemeinen Auffassung</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-rose-700">Nevertheless /
+                                            Nonetheless,</span> <span
+                                            class="text-xs text-gray-500">Nichtsdestotrotz</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-rose-700">On the one hand...
+                                            on the other hand,</span> <span class="text-xs text-gray-500">Auf der einen
+                                            Seite... auf der anderen Seite</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-rose-700">However, it must be
+                                            noted that...</span> <span class="text-xs text-gray-500">Jedoch muss
+                                            angemerkt werden, dass...</span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Concluding -->
+                            <div
+                                class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-teal-400 border border-gray-100">
+                                <div
+                                    class="w-10 h-10 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-flag-checkered"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-3 text-lg">Cause, Effect & Concluding</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex flex-col"><span class="font-bold text-teal-700">Consequently /
+                                            Hence,</span> <span class="text-xs text-gray-500">Folglich / Daher</span>
+                                    </li>
+                                    <li class="flex flex-col"><span class="font-bold text-teal-700">As a result,</span>
+                                        <span class="text-xs text-gray-500">Als Ergebnis / Demzufolge</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-teal-700">Taking everything
+                                            into consideration,</span> <span class="text-xs text-gray-500">Unter
+                                            Berücksichtigung aller Aspekte</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-teal-700">To conclude / In
+                                            conclusion,</span> <span
+                                            class="text-xs text-gray-500">Zusammenfassend</span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Expressing Opinion -->
+                            <div
+                                class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-amber-400 border border-gray-100">
+                                <div
+                                    class="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-3 text-lg">Expressing Opinion</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex flex-col"><span class="font-bold text-amber-700">I firmly believe
+                                            that...</span> <span class="text-xs text-gray-500">Ich bin der festen
+                                            Überzeugung, dass...</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-amber-700">From my
+                                            perspective,</span> <span class="text-xs text-gray-500">Aus meiner
+                                            Sicht</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-amber-700">It is questionable
+                                            whether...</span> <span class="text-xs text-gray-500">Es ist fraglich,
+                                            ob...</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-amber-700">There is no denying
+                                            that...</span> <span class="text-xs text-gray-500">Es lässt sich nicht
+                                            leugnen, dass...</span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Emphasizing -->
+                            <div
+                                class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-emerald-400 border border-gray-100">
+                                <div
+                                    class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-bullhorn"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-3 text-lg">Emphasizing</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex flex-col"><span class="font-bold text-emerald-700">Particularly /
+                                            Specifically,</span> <span class="text-xs text-gray-500">Insbesondere /
+                                            Speziell</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-emerald-700">It is crucial to
+                                            emphasize...</span> <span class="text-xs text-gray-500">Es ist entscheidend
+                                            zu betonen...</span></li>
+                                    <li class="flex flex-col"><span
+                                            class="font-bold text-emerald-700">Undoubtedly,</span> <span
+                                            class="text-xs text-gray-500">Zweifellos</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-emerald-700">Above all,</span>
+                                        <span class="text-xs text-gray-500">Vor allem</span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Referencing -->
+                            <div
+                                class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-cyan-400 border border-gray-100">
+                                <div
+                                    class="w-10 h-10 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-quote-left"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-800 mb-3 text-lg">Referencing</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex flex-col"><span class="font-bold text-cyan-700">With regard
+                                            to...</span> <span class="text-xs text-gray-500">Im Hinblick auf /
+                                            bezüglich...</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-cyan-700">According to the
+                                            author,</span> <span class="text-xs text-gray-500">Laut dem Autor</span>
+                                    </li>
+                                    <li class="flex flex-col"><span class="font-bold text-cyan-700">As stated/mentioned
+                                            in line...</span> <span class="text-xs text-gray-500">Wie in Zeile...
+                                            erwähnt/angegeben</span></li>
+                                    <li class="flex flex-col"><span class="font-bold text-cyan-700">Referring
+                                            to...</span> <span class="text-xs text-gray-500">Bezugnehmend auf...</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // API Configuration
+        // Note: The API call goes through our local proxy to hide the API key
+        const API_URL = `https://englisch-abitur.onrender.com`;
+
+        // ==================== PERSISTENCE (localStorage) ====================
+        const STORAGE_KEYS = {
+            VOCAB_STATUS: 'abiprep_vocab_status',
+            THEME: 'abiprep_theme'
+        };
+
+        function saveToStorage(key, value) {
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { }
+        }
+
+        function loadFromStorage(key, fallback) {
+            try {
+                const val = localStorage.getItem(key);
+                return val !== null ? JSON.parse(val) : fallback;
+            } catch (e) { return fallback; }
+        }
+
+        // ==================== THEME ====================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+            saveToStorage(STORAGE_KEYS.THEME, newTheme);
+        }
+
+        function initTheme() {
+            const saved = loadFromStorage(STORAGE_KEYS.THEME, 'light');
+            document.documentElement.setAttribute('data-theme', saved);
+            document.getElementById('theme-icon').textContent = saved === 'dark' ? '🌙' : '☀️';
+        }
+
+        // ==================== TOAST ====================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // ==================== PARTICLES ====================
+        function initParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animId;
+
+            function resize() {
+                const parent = canvas.parentElement;
+                canvas.width = parent.offsetWidth;
+                canvas.height = parent.offsetHeight;
+            }
+
+            function createParticles() {
+                particles = [];
+                const count = Math.min(40, Math.floor(canvas.width / 20));
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        r: Math.random() * 2 + 0.5,
+                        vx: (Math.random() - 0.5) * 0.3,
+                        vy: (Math.random() - 0.5) * 0.3,
+                        alpha: Math.random() * 0.4 + 0.1
+                    });
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = isDark
+                        ? `rgba(129, 140, 248, ${p.alpha})`
+                        : `rgba(79, 70, 229, ${p.alpha})`;
+                    ctx.fill();
+                });
+
+                // Draw connections
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = isDark
+                                ? `rgba(129, 140, 248, ${0.08 * (1 - dist / 120)})`
+                                : `rgba(79, 70, 229, ${0.06 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                animId = requestAnimationFrame(draw);
+            }
+
+            resize();
+            createParticles();
+            draw();
+            window.addEventListener('resize', () => { resize(); createParticles(); });
+        }
+
+
+        // Utility function for executing API calls with exponential backoff
+        async function executeWithBackoff(payload) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i <= delays.length; i++) {
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                } catch (error) {
+                    if (i === delays.length) {
+                        throw error;
+                    }
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        }
+
+        async function callGeminiAPI(prompt, systemInstruction) {
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+            return await executeWithBackoff(payload);
+        }
+
+        // UI Utilities
+        function showModal(title, text, type = 'info') {
+            const modal = document.getElementById('custom-modal');
+            const modalContent = document.getElementById('modal-content');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerText = text;
+
+            const icon = document.getElementById('modal-icon');
+            if (type === 'error') {
+                icon.className = "fa-solid fa-triangle-exclamation text-xl text-red-600";
+                icon.parentElement.className = "flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4";
+            } else {
+                icon.className = "fa-solid fa-circle-info text-xl text-indigo-600";
+                icon.parentElement.className = "flex items-center justify-center w-12 h-12 mx-auto bg-indigo-100 rounded-full mb-4";
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            const modalContent = document.getElementById('modal-content');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Navigation Logic
+        function showSection(sectionId) {
+            const sections = ['section-home', 'section-study', 'section-tasks', 'section-vocab'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            const targetEl = document.getElementById('section-' + sectionId);
+            if (targetEl) {
+                targetEl.style.display = 'block';
+                // Re-trigger animation
+                targetEl.classList.remove('section-enter');
+                void targetEl.offsetWidth; // Force reflow
+                targetEl.classList.add('section-enter');
+            }
+
+            if (sectionId === 'study' && typeof closeTopic === 'function') {
+                closeTopic();
+            }
+
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('text-slate-600');
+            });
+
+            // Set active
+            const activeBtn = Array.from(btns).find(btn => btn.getAttribute('onclick').includes(sectionId));
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600');
+                activeBtn.classList.add('bg-slate-900', 'text-white');
+            }
+        }
+
+        function openTopic(topicId) {
+            document.getElementById('study-master').classList.add('hidden');
+            document.getElementById('study-detail').classList.remove('hidden');
+
+            const contents = document.querySelectorAll('.topic-detail');
+            contents.forEach(el => el.classList.add('hidden'));
+
+            const target = document.getElementById('topic-content-' + topicId);
+            target.classList.remove('hidden');
+            // Re-trigger animation
+            target.classList.remove('section-enter');
+            void target.offsetWidth;
+            target.classList.add('section-enter');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeTopic() {
+            const detailView = document.getElementById('study-detail');
+            const masterView = document.getElementById('study-master');
+            if (detailView && masterView) {
+                detailView.classList.add('hidden');
+                masterView.classList.remove('hidden');
+            }
+        }
+
+        function switchTaskTab(tabName) {
+            const contents = document.querySelectorAll('.task-content');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            const buttons = ['btn-t-summary', 'btn-t-analysis', 'btn-t-comment', 'btn-t-mediation'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.classList.remove('tab-active', 'bg-indigo-50');
+                    btn.classList.add('tab-inactive', 'hover:bg-gray-50');
+                }
+            });
+
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-t-' + tabName);
+            if (activeBtn) {
+                activeBtn.classList.remove('tab-inactive', 'hover:bg-gray-50');
+                activeBtn.classList.add('tab-active', 'bg-indigo-50');
+            }
+
+            // Load saved feedback if it exists
+            const feedbackContainer = document.getElementById(`feedback-container-${tabName}`);
+            const feedbackContent = document.getElementById(`feedback-content-${tabName}`);
+            const savedFeedback = loadFromStorage(`abiprep_feedback_${tabName}`, null);
+
+            if (savedFeedback) {
+                feedbackContent.innerHTML = savedFeedback;
+                feedbackContainer.classList.remove('hidden');
+            } else {
+                feedbackContainer.classList.add('hidden');
+            }
+        }
+
+        // Setup Word Counters & Drafts
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        const taskTypes = ['summary', 'analysis', 'comment', 'mediation'];
+        taskTypes.forEach(type => {
+            const inputEl = document.getElementById(`essay-${type}-input`);
+            const countEl = document.getElementById(`word-count-${type}`);
+            if (inputEl && countEl) {
+                // Load Draft from LocalStorage
+                const savedDraft = loadFromStorage(`abiprep_draft_${type}`, '');
+                if (savedDraft) {
+                    inputEl.value = savedDraft;
+                    const count = savedDraft === "" ? 0 : savedDraft.split(/\s+/).length;
+                    countEl.innerText = `${count} words`;
+                }
+
+                // Debounced input handler
+                const handleInput = debounce(function () {
+                    const text = inputEl.value.trim();
+                    const count = text === "" ? 0 : text.split(/\s+/).length;
+                    countEl.innerText = `${count} words`;
+                    saveToStorage(`abiprep_draft_${type}`, text); // Save draft
+                }, 300);
+
+                inputEl.addEventListener('input', handleInput);
+            }
+        });
+
+        async function gradeEssay(inputId, type) {
+            const inputEl = document.getElementById(inputId);
+            const text = inputEl.value.trim();
+            const btn = document.getElementById(`grade-btn-${type}`);
+            const container = document.getElementById(`feedback-container-${type}`);
+            const contentDiv = document.getElementById(`feedback-content-${type}`);
+
+            if (text.length < 30) {
+                showModal("Too short!", "Please write at least a few sentences before requesting feedback.", "error");
+                return;
+            }
+
+            // UI State Loading
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = `<div class="loader mr-2 w-4 h-4 border-2"></div> Grading...`;
+            btn.disabled = true;
+            inputEl.disabled = true;
+            container.classList.add('hidden');
+
+            let specificRubric = "";
+            if (type === 'summary') specificRubric = "1. Neutral tone, no personal opinion, no quotes. 2. Relevance of summarized points. 3. Conciseness.";
+            else if (type === 'analysis') specificRubric = "1. Proper use of quotes/line numbers. 2. Identification and explanation of rhetorical devices. 3. Academic tone.";
+            else if (type === 'comment') specificRubric = "1. Task Fulfilment (Structure, relevance). 2. Persuasive arguments. 3. Vocabulary (C1/C2 connectives).";
+            else if (type === 'mediation') specificRubric = "1. Appropriate format and target audience. 2. No word-for-word translation. 3. Clear transfer of core info.";
+
+            const systemPrompt = `You are a strict but constructive German High School (Gymnasium) English teacher grading Abitur preparations.
+        The student is answering an '${type.toUpperCase()}' task.
+        Evaluate the text based on:
+        ${specificRubric}
+        4. Language (Grammar accuracy, spelling, C1/C2 vocabulary).
+        Format your response in Markdown using bullet points and bold text for readability. Do not output raw HTML. Keep it concise but highly educational.`;
+
+            try {
+                const aiFeedback = await callGeminiAPI(`Here is the student's text for the operator '${type}':\n\n"${text}"`, systemPrompt);
+
+                // Parse markdown, sanitize, and show
+                const sanitizedHtml = DOMPurify.sanitize(marked.parse(aiFeedback));
+                contentDiv.innerHTML = sanitizedHtml;
+                container.classList.remove('hidden');
+
+                // Save feedback to storage
+                saveToStorage(`abiprep_feedback_${type}`, sanitizedHtml);
+
+                // Scroll to feedback
+                container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            } catch (error) {
+                showModal("Error", "Could not connect to the AI tutor. Please try again later.", "error");
+            } finally {
+                // UI State Reset
+                btn.innerHTML = originalBtnHtml;
+                btn.disabled = false;
+                inputEl.disabled = false;
+            }
+        }
+
+        // --- Vocabulary Features Logic (Flashcards & Quiz) ---
+
+        const vocabList = [
+            { word: "ubiquitous", translation: "allgegenwärtig", definition: "present, appearing, or found everywhere", example: "Smartphones have become ubiquitous in modern society." },
+            { word: "detrimental", translation: "schädlich", definition: "tending to cause harm", example: "The policy had a detrimental effect on the economy." },
+            { word: "to mitigate", translation: "abmildern / lindern", definition: "make less severe, serious, or painful", example: "We need immediate action to mitigate the effects of climate change." },
+            { word: "obsolete", translation: "veraltet / überholt", definition: "no longer produced or used; out of date", example: "The rapid advance of technology has made DVDs almost obsolete." },
+            { word: "ambiguity", translation: "Mehrdeutigkeit", definition: "the quality of being open to more than one interpretation", example: "The ambiguity of the author's ending leaves the reader thinking." },
+            { word: "to exacerbate", translation: "verschlimmern", definition: "make a problem, bad situation, or negative feeling worse", example: "The new law will only exacerbate the housing crisis." },
+            { word: "to scrutinize", translation: "genau untersuchen", definition: "examine or inspect closely and thoroughly", example: "The politician's past was heavily scrutinized by the media." },
+            { word: "prevalent", translation: "vorherrschend / weit verbreitet", definition: "widespread in a particular area or at a particular time", example: "This ideology is particularly prevalent among young voters." },
+            { word: "disparity", translation: "Ungleichheit / Diskrepanz", definition: "a great difference, especially concerning equality", example: "There is a growing economic disparity between the Global North and South." },
+            { word: "to foster", translation: "fördern / pflegen", definition: "encourage or promote the development of something", example: "The program is designed to foster cultural exchange." },
+            { word: "tangible", translation: "greifbar / konkret", definition: "perceptible by touch; having physical substance or clear results", example: "We need tangible solutions, not just empty promises." },
+            { word: "assertion", translation: "Behauptung", definition: "a confident and forceful statement of fact or belief", example: "The author's main assertion is that globalization is failing the working class." },
+            { word: "to refute", translation: "widerlegen", definition: "prove a statement or theory to be wrong or false", example: "These statistics completely refute the government's argument." },
+            { word: "imperative", translation: "zwingend erforderlich", definition: "of vital importance; crucial", example: "It is imperative that we act before the tipping point is reached." },
+            { word: "profound", translation: "tiefgründig / weitreichend", definition: "very great or intense; having deep meaning", example: "The invention of the internet had a profound impact on society." },
+            { word: "inevitable", translation: "unvermeidlich", definition: "certain to happen; unavoidable", example: "Some argue that cultural homogenization is the inevitable result of globalization." },
+            { word: "to marginalize", translation: "an den Rand drängen", definition: "treat a person, group, or concept as insignificant or peripheral", example: "Minority groups often feel marginalized by mainstream media." },
+            { word: "to endorse", translation: "befürworten / unterstützen", definition: "declare one's public approval or support of", example: "The scientific community unanimously endorses this theory." },
+            { word: "ambivalent", translation: "zwiespältig", definition: "having mixed feelings or contradictory ideas about something", example: "Society remains largely ambivalent about the use of artificial intelligence." },
+            { word: "paramount", translation: "von höchster Bedeutung", definition: "more important than anything else; supreme", example: "Protecting human rights is of paramount importance." },
+            { word: "feasible", translation: "machbar / umsetzbar", definition: "possible to do easily or conveniently", example: "Switching entirely to solar power by 2030 is unfortunately not feasible." },
+            { word: "to convey", translation: "vermitteln", definition: "make an idea, impression, or feeling known or understandable", example: "The poem attempts to convey a sense of hopeless despair." },
+            { word: "volatile", translation: "unbeständig / sprunghaft", definition: "liable to change rapidly and unpredictably, especially for the worse", example: "The political situation in the region remains highly volatile." },
+            { word: "resilient", translation: "widerstandsfähig", definition: "able to withstand or recover quickly from difficult conditions", example: "The economy proved to be more resilient than experts predicted." },
+            { word: "underlying", translation: "zugrundeliegend", definition: "the cause or basis of something, even if not obvious", example: "The underlying message of the novel is a critique of capitalism." },
+            { word: "to outline", translation: "skizzieren / zusammenfassen", definition: "give a summary of", example: "The operator asks you to outline the main arguments." },
+            { word: "to assess", translation: "bewerten / beurteilen", definition: "evaluate or estimate the nature, ability, or quality of", example: "You must assess the validity of the author's claims." },
+            { word: "repercussions", translation: "Auswirkungen / Folgen", definition: "an unintended consequence of an event or action, especially an unwelcome one", example: "Brexit had severe economic repercussions for the UK." },
+            { word: "to alienate", translation: "entfremden", definition: "cause someone to feel isolated or estranged", example: "The new policy threatens to alienate working-class voters." },
+            { word: "bias", translation: "Voreingenommenheit / Tendenz", definition: "prejudice in favor of or against one thing, person, or group", example: "The news article shows a clear political bias." },
+            { word: "to ponder", translation: "nachdenken über / abwägen", definition: "think about carefully, especially before making a decision", example: "We must ponder the consequences of this legislative change." },
+            { word: "discrepancy", translation: "Unstimmigkeit / Diskrepanz", definition: "an illogical or surprising lack of compatibility between two facts", example: "There is a huge discrepancy between the promised results and the actual outcome." },
+            { word: "pivotal", translation: "entscheidend / zentral", definition: "of crucial importance in relation to the development or success of something else", example: "Education plays a pivotal role in social mobility." },
+            { word: "meticulously", translation: "akribisch / sorgfältig", definition: "in a way that shows great attention to detail; very thoroughly", example: "The data was meticulously collected over a period of ten years." },
+            { word: "to alleviate", translation: "lindern / erleichtern", definition: "make suffering, deficiency, or a problem less severe", example: "The organization's main goal is to alleviate poverty in urban areas." },
+            { word: "daunting", translation: "entmutigend / abschreckend", definition: "seeming difficult to deal with in prospect; intimidating", example: "Tackling climate change on a global scale is a daunting task." },
+            { word: "concise", translation: "prägnant / kurz gefasst", definition: "giving a lot of information clearly and in a few words", example: "Your summary should be as concise and objective as possible." },
+            { word: "to perceive", translation: "wahrnehmen / auffassen", definition: "become aware or conscious of something; come to realize or understand", example: "The United States is often perceived as a land of boundless opportunities." },
+            { word: "implication", translation: "Auswirkung / Bedeutung", definition: "the conclusion that can be drawn from something although it is not explicitly stated", example: "The political implications of this decision are vast." },
+            { word: "intricate", translation: "kompliziert / verschlungen", definition: "very complicated or detailed", example: "He tried to explain the intricate mechanics of the global financial system." },
+            { word: "generic", translation: "allgemein / generisch", definition: "characteristic of or relating to a class or group of things; not specific", example: "The author uses generic terms instead of specific examples." },
+            { word: "to encompass", translation: "umfassen / miteinbeziehen", definition: "surround and have or hold within", example: "The term 'culture' encompasses language, religion, cuisine, and social habits." },
+            { word: "to resonate", translation: "Anklang finden / mitschwingen", definition: "produce or be filled with a deep, full, reverberating sound; to evoke a feeling of shared emotion", example: "The politician's message resonated deeply with the working class." },
+            { word: "eloquent", translation: "redegewandt / ausdrucksvoll", definition: "fluent or persuasive in speaking or writing", example: "She gave an eloquent speech advocating for human rights." },
+            { word: "comprehensive", translation: "umfassend", definition: "including or dealing with all or nearly all elements or aspects of something", example: "The student provided a comprehensive analysis of the text." },
+            { word: "indispensable", translation: "unverzichtbar", definition: "absolutely necessary", example: "International cooperation is indispensable for environmental protection." },
+            { word: "unprecedented", translation: "beispiellos", definition: "never done or known before", example: "The internet has connected people on an unprecedented scale." },
+            { word: "to deduce", translation: "ableiten / schlussfolgern", definition: "arrive at a fact or a conclusion by reasoning", example: "From these statistics, we can easily deduce that the strategy failed." },
+            { word: "fallacy", translation: "Irrtum / Trugschluss", definition: "a mistaken belief, especially one based on unsound arguments", example: "The assumption that all growth is good is a dangerous fallacy." },
+            { word: "to obscure", translation: "verschleiern / verdecken", definition: "keep from being seen; conceal", example: "The complex terminology only serves to obscure the author's real intent." }
+        ];
+
+        // Load saved vocab status from localStorage
+        function loadVocabStatus() {
+            const saved = loadFromStorage(STORAGE_KEYS.VOCAB_STATUS, null);
+            if (saved && Array.isArray(saved) && saved.length === vocabList.length) {
+                saved.forEach((status, i) => {
+                    vocabList[i].status = status;
+                });
+            } else {
+                vocabList.forEach(v => v.status = v.status || 'unseen');
+            }
+        }
+
+        function saveVocabStatus() {
+            saveToStorage(STORAGE_KEYS.VOCAB_STATUS, vocabList.map(v => v.status));
+        }
+
+        // Vocab Tabs Logic
+        function switchVocabSubTab(tabName) {
+            const contents = document.querySelectorAll('.vocab-tab-content');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            const buttons = ['btn-v-flashcards', 'btn-v-quiz', 'btn-v-structures'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                btn.classList.remove('tab-active', 'bg-purple-50');
+                btn.classList.add('tab-inactive', 'hover:bg-gray-50');
+            });
+
+            document.getElementById('tab-v-' + tabName).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-v-' + tabName);
+            activeBtn.classList.remove('tab-inactive', 'hover:bg-gray-50');
+            activeBtn.classList.add('tab-active', 'bg-purple-50');
+        }
+
+        // Flashcard Logic
+        let currentCardIdx = 0;
+
+        function updateFlashcardUI() {
+            const card = vocabList[currentCardIdx];
+            document.getElementById('fc-word').innerText = card.word;
+            document.getElementById('fc-translation').innerText = card.translation;
+            document.getElementById('fc-definition').innerText = `"${card.definition}"`;
+            document.getElementById('fc-example').innerText = `"${card.example}"`;
+            document.getElementById('fc-counter').innerText = `${currentCardIdx + 1} / ${vocabList.length}`;
+
+            // Update Stats
+            const mastered = vocabList.filter(v => v.status === 'mastered').length;
+            const learning = vocabList.filter(v => v.status === 'learning').length;
+            const unseen = vocabList.length - mastered - learning;
+
+            document.getElementById('fc-stat-mastered').innerText = mastered;
+            document.getElementById('fc-stat-learning').innerText = learning;
+            document.getElementById('fc-stat-unseen').innerText = unseen;
+
+            // Generate Badge HTML
+            let badgeHtml = '';
+            if (card.status === 'mastered') {
+                badgeHtml = '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-bold shadow-sm border border-green-200"><i class="fa-solid fa-check mr-1"></i> Mastered</span>';
+            } else if (card.status === 'learning') {
+                badgeHtml = '<span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-bold shadow-sm border border-orange-200"><i class="fa-solid fa-rotate-left mr-1"></i> Learning</span>';
+            } else {
+                badgeHtml = '<span class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full font-bold shadow-sm border border-gray-200">Unseen</span>';
+            }
+
+            // Apply badge to both front and back
+            document.getElementById('fc-badge-front').innerHTML = badgeHtml;
+            document.getElementById('fc-badge-back').innerHTML = badgeHtml;
+
+            // Disable evaluation actions until flipped
+            document.getElementById('fc-actions').classList.add('opacity-50', 'pointer-events-none');
+
+            // Ensure card is flipped to front
+            const inner = document.getElementById('flashcard-inner');
+            inner.classList.remove('rotate-y-180', 'flipped');
+            inner.style.transform = 'rotateY(0deg)';
+        }
+
+        function flipFlashcard() {
+            const inner = document.getElementById('flashcard-inner');
+            const actions = document.getElementById('fc-actions');
+
+            if (inner.style.transform === 'rotateY(180deg)') {
+                inner.style.transform = 'rotateY(0deg)';
+                // Hide actions on front
+                actions.classList.add('opacity-50', 'pointer-events-none');
+            } else {
+                inner.style.transform = 'rotateY(180deg)';
+                // Reveal evaluation actions on back
+                actions.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        function markCard(status) {
+            vocabList[currentCardIdx].status = status;
+            saveVocabStatus();
+
+            if (status === 'mastered') {
+                showToast("Word Mastered! 🎉");
+            } else if (status === 'learning') {
+                showToast("Added to learning list 📖");
+            }
+
+            nextFlashcard(); // Automatically move to the next card
+        }
+
+        function nextFlashcard() {
+            currentCardIdx = (currentCardIdx + 1) % vocabList.length;
+            updateFlashcardUI();
+        }
+
+        function prevFlashcard() {
+            currentCardIdx = (currentCardIdx - 1 + vocabList.length) % vocabList.length;
+            updateFlashcardUI();
+        }
+
+        // Quiz Logic
+        let quizQuestions = [];
+        let currentQuizIdx = 0;
+        let quizScore = 0;
+
+        function startVocabQuiz() {
+            document.getElementById('quiz-setup').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-active').classList.remove('hidden');
+
+            // Shuffle and pick 10 questions
+            let shuffled = [...vocabList].sort(() => 0.5 - Math.random());
+            quizQuestions = shuffled.slice(0, 10);
+            currentQuizIdx = 0;
+            quizScore = 0;
+
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const q = quizQuestions[currentQuizIdx];
+            document.getElementById('quiz-q-num').innerText = currentQuizIdx + 1;
+            document.getElementById('quiz-score').innerText = quizScore;
+
+            document.getElementById('quiz-target-word').innerText = q.translation;
+            document.getElementById('quiz-target-def').innerText = `Hint: ${q.definition}`;
+
+            // Generate options
+            let options = [q.word];
+            while (options.length < 4) {
+                let randomWord = vocabList[Math.floor(Math.random() * vocabList.length)].word;
+                if (!options.includes(randomWord)) options.push(randomWord);
+            }
+            options.sort(() => 0.5 - Math.random()); // Shuffle options
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 border-2 border-gray-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 font-semibold text-gray-800 transition text-lg w-full";
+                btn.innerText = opt;
+                btn.onclick = () => handleQuizAnswer(opt, q.word, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleQuizAnswer(selectedWord, correctWord, btnElement) {
+            // Disable all buttons immediately
+            const allBtns = document.getElementById('quiz-options').querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedWord === correctWord) {
+                btnElement.classList.remove('border-gray-200', 'hover:border-indigo-500', 'hover:bg-indigo-50');
+                btnElement.classList.add('bg-green-500', 'text-white', 'border-green-500');
+                quizScore++;
+            } else {
+                btnElement.classList.remove('border-gray-200', 'hover:border-indigo-500', 'hover:bg-indigo-50');
+                btnElement.classList.add('bg-red-500', 'text-white', 'border-red-500');
+                // Highlight correct one
+                allBtns.forEach(b => {
+                    if (b.innerText === correctWord) {
+                        b.classList.remove('border-gray-200');
+                        b.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                    }
+                });
+            }
+
+            document.getElementById('quiz-score').innerText = quizScore;
+
+            setTimeout(() => {
+                currentQuizIdx++;
+                if (currentQuizIdx < 10) {
+                    renderQuizQuestion();
+                } else {
+                    endQuiz();
+                }
+            }, 1500);
+        }
+
+        function endQuiz() {
+            document.getElementById('quiz-active').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('quiz-final-score').innerText = quizScore;
+            showToast("Quiz Completed! 🏆");
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger when typing in inputs
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            switch (e.key) {
+                case '1': showSection('home'); break;
+                case '2': showSection('study'); break;
+                case '3': showSection('tasks'); break;
+                case '4': showSection('vocab'); break;
+                case ' ':
+                    // Space to flip flashcard (only on vocab section)
+                    if (document.getElementById('section-vocab').style.display !== 'none') {
+                        e.preventDefault();
+                        flipFlashcard();
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (document.getElementById('section-vocab').style.display !== 'none') {
+                        prevFlashcard();
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (document.getElementById('section-vocab').style.display !== 'none') {
+                        nextFlashcard();
+                    }
+                    break;
+            }
+        });
+
+        // ==================== TTS & GESTURES ====================
+        function speakWord(e) {
+            e.stopPropagation(); // prevent flipping the card
+            if ('speechSynthesis' in window) {
+                const word = document.getElementById('fc-word').innerText;
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-GB';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Swipe Gestures
+        let touchstartX = 0;
+        let touchendX = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashcardElem = document.querySelector('.perspective');
+            if (flashcardElem) {
+                flashcardElem.addEventListener('touchstart', e => {
+                    touchstartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+
+                flashcardElem.addEventListener('touchend', e => {
+                    touchendX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                }, { passive: true });
+            }
+        });
+
+        function handleSwipe() {
+            // Only handle swipe if card is flipped (actions are visible)
+            const inner = document.getElementById('flashcard-inner');
+            if (inner.style.transform !== 'rotateY(180deg)') return;
+
+            const threshold = 50; // Minimum distance for a swipe
+            if (touchendX < touchstartX - threshold) {
+                // Swiped Left - Study Again
+                markCard('learning');
+            }
+            if (touchendX > touchstartX + threshold) {
+                // Swiped Right - Got it
+                markCard('mastered');
+            }
+        }
+
+        // Initialize display
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadVocabStatus();
+            // Initialize flashcard UI immediately so it's not empty
+            updateFlashcardUI();
+            showSection('home');
+            initParticles();
+            // Initialize the first exercise tab to load any saved feedback
+            switchTaskTab('summary');
+        });
+    </script>
+</body>
+
+</html>
